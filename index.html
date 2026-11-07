@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Shock Compare</title>
+<title>Shock Comparison App</title>
 <meta name="robots" content="noindex,nofollow,noarchive">
 <script>
 /* Passcode screen. The code is not case sensitive; only its SHA-256 hash is stored here. */
@@ -24,7 +24,7 @@
   function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
   function show() {
     var g = document.createElement('div'); g.id = 'gate';
-    g.innerHTML = '<form autocomplete="off"><h1>Shock Compare</h1><p>Enter the passcode to continue.</p>' +
+    g.innerHTML = '<form autocomplete="off"><h1>Shock Comparison App</h1><p>Enter the passcode to continue.</p>' +
       '<input type="password" placeholder="Passcode" autocapitalize="none" autocorrect="off" spellcheck="false">' +
       '<button type="submit">Unlock</button><div class="err"></div></form>';
     document.body.appendChild(g);
