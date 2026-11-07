@@ -1,6 +1,6 @@
 // Offline support. App files are saved on install; the photo reader is saved the first time it is used.
-const CACHE = 'shocks-8377f62d73';
-const SHELL = ['./', 'index.html', 'app.js', 'parse.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'vendor/tesseract.min.js'];
+const CACHE = 'shocks-4426ad132d';
+const SHELL = ['./', 'index.html', 'app.js', 'parse.js', 'sample.json', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'vendor/tesseract.min.js'];
 const READER = 'shocks-reader-v7'; // big OCR files, kept across app updates
 
 self.addEventListener('install', e => {

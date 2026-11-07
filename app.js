@@ -76,22 +76,45 @@
   }
   $('#menuBtn').onclick = function () { go('#menu'); };
 
+  function hasSample() { return S.groups.some(function (g) { return g.sample; }); }
+  function loadSample(cb) {
+    fetch('sample.json').then(function (r) { return r.json(); }).then(function (j) {
+      j.groups.forEach(function (g) { if (!S.groups.some(function (x) { return x.id === g.id; })) { S.groups.push(g); S.shocks[g.id] = j.shocks[g.id] || {}; } });
+      S.settings.sampleSeen = true; save(); if (cb) cb();
+    }).catch(function () {});
+  }
+  function clearSample() {
+    S.groups.filter(function (g) { return g.sample; }).forEach(function (g) { delete S.shocks[g.id]; });
+    S.groups = S.groups.filter(function (g) { return !g.sample; }); save();
+    go(S.groups.length ? '#g-' + S.groups[0].id : '#');
+  }
+  function banner(m) {
+    if (!hasSample() || route.view === 'menu') return;
+    var d = document.createElement('div'); d.className = 'card';
+    d.style.cssText = 'display:flex;gap:10px;align-items:center;border-color:var(--flagb);background:var(--flag)';
+    d.innerHTML = '<div style="flex:1;font-size:13px"><b>Sample data.</b> Made-up drivers and numbers so you can try the app.</div><button class="btn sm" id="clrS">Clear &amp; start mine</button>';
+    m.insertBefore(d, m.firstChild);
+    $('#clrS').onclick = async function () { if (await ask('Clear the sample data?', 'Removes the sample drivers. Anything you added yourself stays.', 'Clear')) clearSample(); };
+  }
+
   function render() {
     parseHash(); renderTabs(); setNavH();
     var m = $('#main');
-    if (route.view === 'home') return renderHome(m);
-    if (route.view === 'group') return renderGroup(m);
-    if (route.view === 'compare') return renderCompare(m);
-    if (route.view === 'menu') return renderMenu(m);
+    if (route.view === 'home') renderHome(m);
+    else if (route.view === 'group') renderGroup(m);
+    else if (route.view === 'compare') renderCompare(m);
+    else if (route.view === 'menu') renderMenu(m);
+    banner(m);
   }
 
   // ---------- home / first run ----------
   function renderHome(m) {
     m.innerHTML = '<div class="card empty"><h2 style="justify-content:center">Shock Compare</h2>' +
       '<div class="sub">Add a car or driver, then add each corner’s dyno sheet by scanning a photo, pasting text, or typing it in. Everything stays on this phone.</div>' +
-      '<div class="row"><button class="btn pri" id="addG">+ Add car / driver</button><button class="btn" id="restore0">Restore a backup</button></div></div>';
+      '<div class="row"><button class="btn pri" id="addG">+ Add car / driver</button><button class="btn" id="sample0">See sample data</button><button class="btn" id="restore0">Restore a backup</button></div></div>';
     $('#addG').onclick = addGroup;
     $('#restore0').onclick = function () { $('#fileBak').click(); };
+    $('#sample0').onclick = function () { loadSample(function () { go('#g-' + S.groups[0].id); }); };
   }
   async function addGroup() {
     var n = await prompt2('Name this car or driver', '', 'Add'); if (!n) return;
@@ -100,7 +123,7 @@
 
   // ---------- group page ----------
   var cornerSel = {};
-  function renderGroup(m) {
+  function renderGroup(m) { setTimeout(function () { if (!m.querySelector('#clrS')) banner(m); }, 0);
     var g = S.groups.find(function (x) { return x.id === route.gid; });
     var cur = cornerSel[g.id] || 'LF';
     var h = '<h2>' + esc(g.name) + '<span class="sp"></span><button class="btn sm" id="ren">Rename</button><button class="btn sm bad" id="delg">Delete</button></h2>';
@@ -382,7 +405,7 @@
     if (st.c != null && st.c >= s.n) st.c = s.n - 1; if (st.r != null && st.r >= s.n) st.r = s.n - 1;
     return st;
   }
-  function renderCompare(m) {
+  function renderCompare(m) { setTimeout(function () { if (!m.querySelector('#clrS')) banner(m); }, 0);
     var h = '<div class="clab">Corner</div><div class="segc" id="cc">' + CORNERS.map(function (c) { return '<button class="' + (c === CMP.corner ? 'on' : '') + '" data-c="' + c + '">' + c + '</button>'; }).join('') + '</div>';
     h += '<div class="clab">Speeds <i>tap one or more</i></div><div class="segc" id="cs">' + [0, 2, 4, 6, 8, 10, 12].map(function (k) { return '<button class="' + (CMP.speeds.indexOf(k) >= 0 ? 'on' : '') + '" data-k="' + k + '">' + V[k] + '"</button>'; }).join('') + '</div>';
     h += '<div class="clab">Zoom</div><div class="zrow"><div class="segc" id="zx">' + [[0, 6], [0, 2], [1, 4], [3, 6]].map(function (z) { return '<button class="' + (z[0] === CMP.zx[0] && z[1] === CMP.zx[1] ? 'on' : '') + '" data-z="' + z + '">' + z[0] + '–' + z[1] + '"</button>'; }).join('') + '</div>' +
@@ -559,5 +582,6 @@
     rd.readAsText(f);
   };
 
+  if (!S.groups.length && !S.settings.sampleSeen) loadSample(function () { go('#g-' + S.groups[0].id); render(); });
   render();
 })();
