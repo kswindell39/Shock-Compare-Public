@@ -4,6 +4,47 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Shock Compare</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<script>
+/* Passcode screen. The code is not case sensitive; only its SHA-256 hash is stored here. */
+(function () {
+  var H = '8531cf2a7bbe27bd8918987502eb9d04d5bc8850db390d8ff7eb69542efdca7b', K = 'sc-gate';
+  var ok = false; try { ok = localStorage.getItem(K) === H; } catch (e) {}
+  if (ok) return;
+  var d = document.documentElement; d.classList.add('locked');
+  var st = document.createElement('style');
+  st.textContent = 'html.locked body>*:not(#gate){display:none!important}' +
+    '#gate{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg,#151517)}' +
+    '#gate form{width:100%;max-width:320px;text-align:center}#gate h1{font:800 22px system-ui;margin:0 0 6px}' +
+    '#gate p{margin:0 0 16px;color:var(--mut,#9a9aa2);font-size:14px}' +
+    '#gate input{width:100%;font:17px system-ui;padding:12px;border-radius:12px;border:1px solid var(--line,#33333a);background:var(--card,#1f1f22);color:var(--ink,#ececee);text-align:center}' +
+    '#gate button{width:100%;margin-top:10px;font:600 16px system-ui;padding:12px;border-radius:12px;border:0;background:var(--ink,#ececee);color:var(--bg,#151517)}' +
+    '#gate .err{color:var(--bad,#e66767);min-height:20px;margin-top:10px;font-size:14px}';
+  document.head.appendChild(st);
+  function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+  function show() {
+    var g = document.createElement('div'); g.id = 'gate';
+    g.innerHTML = '<form autocomplete="off"><h1>Shock Compare</h1><p>Enter the passcode to continue.</p>' +
+      '<input type="password" placeholder="Passcode" autocapitalize="none" autocorrect="off" spellcheck="false">' +
+      '<button type="submit">Unlock</button><div class="err"></div></form>';
+    document.body.appendChild(g);
+    var f = g.querySelector('form'), i = g.querySelector('input'), er = g.querySelector('.err');
+    i.focus();
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var v = i.value.trim().toLowerCase();
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(v)).then(function (b) {
+        if (hex(b) === H) {
+          try { localStorage.setItem(K, H); } catch (e) {}
+          d.classList.remove('locked'); g.remove();
+          window.dispatchEvent(new Event('resize'));
+        } else { er.textContent = 'Wrong passcode. Try again.'; i.select(); }
+      });
+    });
+  }
+  if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
+})();
+</script>
 <meta name="theme-color" content="#151517">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
