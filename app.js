@@ -169,7 +169,7 @@
     ['C', 'R'].forEach(function (p) {
       h += '<tr class="sec"><th colspan="' + (n + 1) + '">' + (p === 'C' ? 'Compression' : 'Rebound') + ' (lbs)</th></tr>';
       V.forEach(function (v, i) {
-        h += '<tr' + (v === 3 ? ' class="hl"' : '') + '><th>' + v.toFixed(2) + '</th>';
+        h += '<tr' + (v === 3 ? ' class="hl"' : i % 2 ? ' class="alt"' : '') + '><th>' + v.toFixed(2) + '</th>';
         for (var q = 0; q < n; q++) { var x = s[p][i][q]; h += '<td' + (i === 0 ? ' class="zero"' : '') + '>' + (x == null ? '<span style="color:var(--mut)">–</span>' : x) + '</td>'; }
         h += '</tr>';
       });
@@ -434,7 +434,7 @@
       function ctl(part) {
         var o = '<option value="off">Hide</option><option value="all">All</option>';
         for (var r = 0; r < n; r++) o += '<option value="' + r + '">' + clickName(r) + '</option>';
-        return '<span class="cw2" data-p="' + part + '"><span class="fl">' + (x.s.dbl ? part.toUpperCase() : '') + '</span><button class="st" data-d="-1">−</button><select>' + o + '</select><button class="st" data-d="1">+</button></span>';
+        return '<span class="cw2" data-p="' + part + '"><span class="fl">' + (x.s.dbl ? part.toUpperCase() : '') + '</span><button class="st" data-d="1" aria-label="One click out">−</button><select>' + o + '</select><button class="st" data-d="-1" aria-label="One click in">+</button></span>';
       }
       row.innerHTML = '<span class="sw2" style="background:' + x.col + '"></span><span class="fn"><b>' + esc(x.g.name) + '</b> ' + esc(x.s.serial || '') + '</span><span class="dblc">' + (x.s.dbl ? ctl('c') + ctl('r') : ctl('c')) + '</span><span class="f3"></span>';
       var st = clickState(x.g.id, CMP.corner, x.s);
@@ -584,4 +584,34 @@
 
   if (!S.groups.length && !S.settings.sampleSeen) loadSample(function () { go('#g-' + S.groups[0].id); render(); });
   render();
+})();
+
+/* Tap a sheet table to highlight lines: a number highlights its column and row,
+   a click number at the top highlights just the column, a speed on the left just the row.
+   Tap the same spot again to clear. */
+(function () {
+  'use strict';
+  document.addEventListener('click', function (e) {
+    var cell = e.target.closest && e.target.closest('table.t td, table.t th');
+    if (!cell) return;
+    var tr = cell.parentNode, tbl = cell.closest('table.t');
+    if (tr.classList.contains('sec')) return;
+    var inHead = !!cell.closest('thead'), col = cell.cellIndex;
+    var newCol = col >= 1 ? String(col) : '';
+    var newRow = inHead ? '' : String(tr.rowIndex);
+    if (inHead && !newCol) return; // the "in/s" label
+    var same = (tbl.getAttribute('data-col') || '') === newCol && (tbl.getAttribute('data-row') || '') === newRow;
+    tbl.querySelectorAll('.csel').forEach(function (c) { c.classList.remove('csel'); });
+    tbl.querySelectorAll('.rsel').forEach(function (r) { r.classList.remove('rsel'); });
+    tbl.removeAttribute('data-col'); tbl.removeAttribute('data-row');
+    if (same) return;
+    if (newCol) {
+      tbl.setAttribute('data-col', newCol);
+      Array.prototype.forEach.call(tbl.rows, function (r) {
+        if (r.classList.contains('sec')) return;
+        var c = r.cells[col]; if (c) c.classList.add('csel');
+      });
+    }
+    if (newRow) { tbl.setAttribute('data-row', newRow); tr.classList.add('rsel'); }
+  });
 })();
