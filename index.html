@@ -54,9 +54,9 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <style>
-:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1f;--mut:#6b6b70;--line:#e3e1dc;--hl:#fbe36a;--flag:#ffe9a8;--flagb:#d9a400;--grid:#e9e7e2;--axis:#8a8984;--bad:#c93a39;
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d1d1f;--mut:#6b6b70;--line:#e3e1dc;--hl:#fbe36a;--flag:#ffe9a8;--flagb:#d9a400;--grid:#e9e7e2;--axis:#8a8984;--bad:#c93a39;--alt:#ecebe5;--csel:#d6e4fa;--cselx:#a9c7f5;--cselh:#2a78d6;
 --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948}
-@media (prefers-color-scheme:dark){:root{--bg:#151517;--card:#1f1f22;--ink:#ececee;--mut:#9a9aa2;--line:#33333a;--hl:#6b5d12;--flag:#5a4a10;--flagb:#e0b520;--grid:#2c2c31;--axis:#77767d;--bad:#e66767;
+@media (prefers-color-scheme:dark){:root{--bg:#151517;--card:#1f1f22;--ink:#ececee;--mut:#9a9aa2;--line:#33333a;--hl:#6b5d12;--flag:#5a4a10;--flagb:#e0b520;--grid:#2c2c31;--axis:#77767d;--bad:#e66767;--alt:#28282c;--csel:#233650;--cselx:#33507a;--cselh:#6aa6f0;
 --s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767}}
 *{box-sizing:border-box}
 body{margin:0;font:14px/1.4 -apple-system,system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:env(safe-area-inset-bottom)}
@@ -88,11 +88,21 @@ h2 .sp{flex:1}
 .tw{overflow-x:auto;margin-top:8px}
 table.t{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:12.5px;width:100%}
 .t th,.t td{padding:2px 5px;text-align:right;white-space:nowrap}
+.t td,.t thead th:not(:first-child){text-align:center}
 .t thead th{color:var(--mut);font-weight:600;font-size:11px;border-bottom:1px solid var(--line)}
 .t tbody th{color:var(--mut);font-weight:600;position:sticky;left:0;background:var(--card)}
 .t tr.sec th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink);padding-top:8px}
+.t tr.alt td,.t tr.alt th{background:var(--alt)}
 .t tr.hl td,.t tr.hl th{background:var(--hl)}
 .t td.zero{font-weight:700}
+.t td{cursor:pointer}
+.t td.csel,.t tr.alt td.csel{background:var(--csel)}
+.t tr.hl td.csel{background:var(--hl);box-shadow:inset 2px 0 var(--cselh),inset -2px 0 var(--cselh)}
+.t tr.rsel td,.t tr.rsel th{background:var(--csel)}
+.t tr.rsel th{color:var(--ink)}
+.t tr.rsel td.csel{background:var(--cselx);font-weight:700;box-shadow:none}
+.t tbody th{cursor:pointer}
+.t thead th.csel{color:var(--bg);background:var(--cselh);border-radius:5px 5px 0 0}
 .empty{text-align:center;padding:22px 12px}
 .empty .row{justify-content:center;margin-top:12px}
 /* overlay screens */
@@ -105,7 +115,7 @@ input.f,select.f,textarea.f{width:100%;font:15px system-ui;padding:10px;border-r
 .eg th{font-size:11px;color:var(--mut);padding:2px 3px;white-space:nowrap;position:sticky;left:0;background:var(--bg);text-align:right}
 .eg thead th{position:static}
 .eg td{padding:1px}
-.eg input{width:46px;font:14px system-ui;text-align:right;padding:6px 4px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.eg input{width:46px;font:14px system-ui;text-align:center;padding:6px 4px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 .eg input.flag{background:var(--flag);border-color:var(--flagb);border-width:2px}
 .eg tr.sec th{text-align:left;color:var(--ink);font-weight:800;padding-top:10px}
 .eg tr.hl th{color:var(--ink)}
