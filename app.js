@@ -1,4 +1,4 @@
-/* Shock Compare – everything is stored on this device only (localStorage). */
+/* Shock Comparison App – everything is stored on this device only (localStorage). */
 (function () {
   'use strict';
   var V = ShockParse.V;
@@ -109,7 +109,7 @@
 
   // ---------- home / first run ----------
   function renderHome(m) {
-    m.innerHTML = '<div class="card empty"><h2 style="justify-content:center">Shock Compare</h2>' +
+    m.innerHTML = '<div class="card empty"><h2 style="justify-content:center">Shock Comparison App</h2>' +
       '<div class="sub">Add a car or driver, then add each corner’s dyno sheet by scanning a photo, pasting text, or typing it in. Everything stays on this phone.</div>' +
       '<div class="row"><button class="btn pri" id="addG">+ Add car / driver</button><button class="btn" id="sample0">See sample data</button><button class="btn" id="restore0">Restore a backup</button></div></div>';
     $('#addG').onclick = addGroup;
@@ -561,7 +561,7 @@
     var name = 'shock-backup-' + new Date().toISOString().slice(0, 10) + '.json';
     try {
       var file = new File([data], name, { type: 'application/json' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Shock Compare backup' }); return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Shock Comparison App backup' }); return; }
     } catch (e) { if (e && e.name === 'AbortError') return; }
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
@@ -569,8 +569,8 @@
     var f = this.files && this.files[0]; if (!f) return; this.value = '';
     var rd = new FileReader();
     rd.onload = async function () {
-      var j; try { j = JSON.parse(rd.result); } catch (e) { toast('That file isn’t a Shock Compare backup'); return; }
-      var d = j && j.data; if (!d || !Array.isArray(d.groups) || typeof d.shocks !== 'object') { toast('That file isn’t a Shock Compare backup'); return; }
+      var j; try { j = JSON.parse(rd.result); } catch (e) { toast('That file isn’t a Shock Comparison App backup'); return; }
+      var d = j && j.data; if (!d || !Array.isArray(d.groups) || typeof d.shocks !== 'object') { toast('That file isn’t a Shock Comparison App backup'); return; }
       var names = d.groups.map(function (g) { return g.name; }).join(', ');
       if (S.groups.length) {
         var add = await ask('Restore backup', 'Add ' + d.groups.length + ' car(s) from the backup (' + names + ') to what’s already on this phone?', 'Add them');
